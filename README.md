@@ -1,2 +1,2 @@
 # hackathon-amdocs
-for hackathon-amdocs event1
+for hackathon-amdocs event2

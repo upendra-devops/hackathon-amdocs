@@ -1,0 +1,57 @@
+As an API consumer, I want to be able to create a new customer in our system via an API so that I can efficiently manage customer information programmatically.
+Acceptance Criteria:
+
+1. Given I have valid authentication credentials:
+	When I send an HTTP POST request to the /customers endpoint with the following payload:
+
+	JSON
+
+	{
+
+	    "firstName": "John",
+
+	    "middleName": "Doe",
+
+	    "lastName": "Smith",
+
+	    "addressLine1": "123 Main St",
+
+	    "city": "Anytown",
+
+	    "country": "United States",
+
+	    "postalCode": "12345",
+
+	    "phoneNumber": "+1 555-123-4567",
+
+	    "emailAddress": "john.doe@example.com"
+
+	}
+
+
+
+	Then the API should create a new customer record.
+
+	And return an HTTP 201 (Created) status code.
+
+	And include the newly created customer’s unique identifier (e.g., customerId) in the response body.
+
+2. Given I provide incomplete or invalid data in the request payload:
+
+	When I send an HTTP POST request to the /customers endpoint with missing or incorrect fields:
+
+	Then the API should return an appropriate error response (e.g., HTTP 400 Bad Request).
+
+	And provide clear error messages indicating the missing or invalid data.
+
+3. Given a customer profile is successfully created:
+
+	When I retrieve customer details via an HTTP GET request to the /customers/{customerId} endpoint:
+
+	Then the API should return accurate customer information matching the data provided during creation.
+
+4. Given I search for the newly created customer:
+
+	When I send an HTTP GET request to the /customers/search?email=john.doe@example.com endpoint:
+
+	Then the API should return the correct customer profile.

@@ -17,11 +17,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class JSONParser {
 
-    private static List<String> sections = Arrays.asList("Introduction", "Solution", "Adoption");
+    private static List<String> sections = Arrays.asList("Introduction", "Solution", "Adoption", "introduction", "solution", "adoption");
     private static Map<String, String> sectionMap = new HashMap<>();
 
 
@@ -40,9 +41,9 @@ public class JSONParser {
         }
 
         DocuFormat object = DocuFormat.builder()
-                .introduction(Section.builder().title("Introduction").description(sectionMap.get("Introduction")).build())
-                .solution(Section.builder().title("Solution details").description(sectionMap.get("Solution")).build())
-                .adoption(Section.builder().title("Adopting new functionality").description(sectionMap.get("Adoption")).build())
+                .introduction(Section.builder().title("Introduction").description(sectionMap.get("Introduction".toLowerCase(Locale.ROOT))).build())
+                .solution(Section.builder().title("Solution details").description(sectionMap.get("Solution".toLowerCase(Locale.ROOT))).build())
+                .adoption(Section.builder().title("Adopting new functionality").description(sectionMap.get("Adoption".toLowerCase(Locale.ROOT))).build())
                 .build();
 
         return object;
@@ -52,7 +53,7 @@ public class JSONParser {
         if(sections.contains(objNode.getKey())) {
             String sectionKey = sections.stream().filter(section -> section.equals(objNode.getKey())).findFirst().get();
 
-            sectionMap.put(sectionKey, declutterContent(objNode.getValue()));
+            sectionMap.put(sectionKey.toLowerCase(Locale.ROOT), declutterContent(objNode.getValue()));
             return;
         }
         Iterator<Map.Entry<String, JsonNode>> nodeItr = objNode.getValue().fields();

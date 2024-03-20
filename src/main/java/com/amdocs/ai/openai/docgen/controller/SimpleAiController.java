@@ -160,6 +160,9 @@ public class SimpleAiController {
 	@PostMapping({"/ai/trigger"})
 	public ResponseEntity trigger(@RequestBody JsonNode payload) throws JsonProcessingException {
 		//log.info(payload.toPrettyString());
+		if(!"closed".equals(payload.get("action").asText())) {
+			return ResponseEntity.ok().build();
+		}
 		GitPRPoJo gitPRPoJo = integrationService.getCodeFromGit(payload);
 		UserMessage storyMessage = new UserMessage(gitPRPoJo.getJiraStory());
 		DocuFormat docuFormat = simpleAIService.getDocumentation(storyMessage, gitPRPoJo.getCodeFragments());

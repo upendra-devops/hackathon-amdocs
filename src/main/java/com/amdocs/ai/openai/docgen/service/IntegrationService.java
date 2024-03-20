@@ -2,6 +2,7 @@ package com.amdocs.ai.openai.docgen.service;
 
 import com.amdocs.ai.openai.docgen.confluence.ConfluenceFeignClient;
 import com.amdocs.ai.openai.docgen.git.GitFeignClient;
+import com.amdocs.ai.openai.docgen.git.GitRawClient;
 import com.amdocs.ai.openai.docgen.jira.JiraFeignClient;
 import com.amdocs.ai.openai.docgen.model.CodeFragment;
 import com.amdocs.ai.openai.docgen.model.GitPRPoJo;
@@ -12,8 +13,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,6 +24,7 @@ public class IntegrationService {
 
     private JiraFeignClient jiraFeignClient;
     private GitFeignClient gitFeignClient;
+    private GitRawClient gitRawClient;
     private ConfluenceFeignClient confluenceFeignClient;
     private ObjectMapper objectMapper;
 
@@ -34,9 +34,10 @@ public class IntegrationService {
     @Value("${com.amdocs.github.auth}")
     private String githubToken;
 
-    public IntegrationService(JiraFeignClient jiraFeignClient, GitFeignClient gitFeignClient, ConfluenceFeignClient confluenceFeignClient) {
+    public IntegrationService(JiraFeignClient jiraFeignClient, GitFeignClient gitFeignClient, GitRawClient gitRawClient, ConfluenceFeignClient confluenceFeignClient) {
         this.jiraFeignClient = jiraFeignClient;
         this.gitFeignClient = gitFeignClient;
+        this.gitRawClient = gitRawClient;
         this.confluenceFeignClient = confluenceFeignClient;
         objectMapper = new ObjectMapper();
     }
@@ -67,11 +68,11 @@ public class IntegrationService {
         String headSHA = gitPRPoJo.getHeadSHA();
 
         return gitPRPoJo.getCommittedFiles().stream().map( gitCommitResource -> {
-            String newCode = gitFeignClient.getCode(user, repo, headSHA, gitCommitResource.getFilePath(), githubToken);
+            String newCode = gitRawClient.getCode(user, repo, headSHA, gitCommitResource.getFilePath(), githubToken);
             if(gitCommitResource.isNew()) {
                 return CodeFragment.builder().newCLass(newCode).fullyQualifiedClassName(gitCommitResource.getFilePath()).build();
             } else {
-                String oldCode = gitFeignClient.getCode(user, repo, baseSHA, gitCommitResource.getFilePath(), githubToken);
+                String oldCode = gitRawClient.getCode(user, repo, baseSHA, gitCommitResource.getFilePath(), githubToken);
                 return CodeFragment.builder().newCLass(newCode).oldCLass(oldCode).fullyQualifiedClassName(gitCommitResource.getFilePath()).build();
             }
         }).collect(Collectors.toList());

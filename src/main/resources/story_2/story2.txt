@@ -1,0 +1,51 @@
+As an API consumer, I want to be able to update customer information via an API while ensuring that the first name and last name remain unchanged.
+
+Acceptance Criteria:
+
+Given I have valid authentication credentials:
+
+When I send an HTTP PUT or PATCH request to the /customers/{customerId} endpoint with the following payload (example for updating the address):
+
+JSON
+
+{
+
+    "addressLine1": "456 Elm Street",
+
+    "city": "Newville",
+
+    "country": "United States",
+
+    "postalCode": "54321",
+
+    "phoneNumber": "+1 555-987-6543",
+
+    "emailAddress": "john.doe@example.com"
+
+}
+
+Then the API should update the customer record.
+
+And return an HTTP 200 (OK) status code.
+
+And ensure that the first name and last name remain unchanged.
+
+Given I provide incomplete or invalid data in the request payload:
+
+When I send an HTTP PUT or PATCH request to the /customers/{customerId} endpoint with missing or incorrect fields:
+
+Then the API should return an appropriate error response (e.g., HTTP 400 Bad Request).
+
+And provide clear error messages indicating the missing or invalid data.
+
+Given the customer profile is successfully updated:
+
+When I retrieve customer details via an HTTP GET request to the /customers/{customerId} endpoint:
+
+Then the API should return accurate customer information, including the updated fields.
+
+Given I search for the updated customer:
+
+When I send an HTTP GET request to the /customers/search?email=john.doe@example.com endpoint:
+
+Then the API should return the correct customer profile.

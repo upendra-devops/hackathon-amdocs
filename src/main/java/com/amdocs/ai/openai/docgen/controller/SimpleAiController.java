@@ -193,7 +193,11 @@ public class SimpleAiController {
 
 		UserMessage storyMessage = new UserMessage(new InputStreamResource(new ByteArrayInputStream(story.getBytes(StandardCharsets.UTF_8))));
 
-		return new Completion(om.writeValueAsString(simpleAIService.getTestCases(storyMessage, type)));
+		String json = om.writeValueAsString(simpleAIService.getTestCases(storyMessage, type));
+		json = json.replace("{\"testCase\":", "");
+		json = json.substring(0, json.length() - 1);
+
+		return new Completion(json);
 	}
 
 	private CodeFragment getCodeFragment(String className, File resourceOld, File resourceNew) throws FileNotFoundException {
